@@ -1,6 +1,4 @@
-<h1>INICIO</h1>
-
-<table class="table table-danger">
+<table class="table table-striped">
   <thead>
     <tr>
       <th>Firstname</th>
