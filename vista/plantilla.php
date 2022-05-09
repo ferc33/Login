@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -61,12 +61,17 @@
              <a class="nav-link " href="index.php?pagina=inicio" >Inicio</a>
             </li>
         <?php endif ?>
-
+         <?php if($_GET["pagina"] == "salir"): ?> 
+              <li class="nav-item">
+             <a class="nav-link active" href="index.php?pagina=salir" >Salir</a>
+            </li>
+        <?php else: ?>
+                     <li class="nav-item">
+             <a class="nav-link" href="index.php?pagina=salir" >Salir</a>
+            </li>
+        <?php endif ?>
 
     <?php endif ?>
-
-
-
 
 </ul>
 </div>
@@ -75,8 +80,7 @@
 <!--    CONTENIDO     -->
 <div class="container-fluid bg-light">
     <div class="container">
-        <?php 
-
+        <?php //Lista blanca. 
         if(isset($_GET['pagina'])){
             if($_GET['pagina']=="registro" ||
                 $_GET['pagina']=="ingreso" ||
@@ -84,6 +88,8 @@
                 $_GET['pagina']=="salir"){
 
                 include "paginas/".$_GET["pagina"].".php";
+        }else {//SINO EXISTE LA PAGINA ERROR 404.
+                include "paginas/error404.php";
         }
 
     }else {
