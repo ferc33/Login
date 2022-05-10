@@ -32,7 +32,7 @@
 	</div>
 	<div class="container-fluid bg-light">
 		<div class="container">
-            <ul class="nav nav-justified py-2 nav-pills ">
+            <ul class="nav nav-justified py-2 nav-pills container-fluid ">
               <?php if (isset($_GET["pagina"])): ?> <!--  -->
               <?php if ($_GET["pagina"]== "registro"): ?>
                <li class="nav-item ">

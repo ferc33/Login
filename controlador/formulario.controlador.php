@@ -3,12 +3,23 @@
 class ControladorFormularios {
 /*
 	Registro
+
 */
-public function ctrRegistro (){
-	if(isset($_POST["registroNombre"])){
-		 echo $_POST["registroNombre"];
+	/*=============================================
+	=           Funcion estatica  utiliza return       =
+	=============================================*/
+	
+	static public function ctrRegistro (){
+		if(isset($_POST["registroNombre"])){
+			
+			return "ok";
+
+		}
 	}
-}
 
 }
+
+
+
+
 
