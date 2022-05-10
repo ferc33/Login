@@ -8,5 +8,11 @@ el usuario envie al controlador*/
 require_once "controlador/plantilla.controlador.php";
 require_once "controlador/formulario.controlador.php";
 
+require_once "modelo/conexion.php";
+
+$conexion = Conexion::conectar();
+
+
+
 $plantilla = new ControladorPlantilla();
 $plantilla -> ctrTraerPlantilla();
