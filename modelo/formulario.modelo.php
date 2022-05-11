@@ -3,7 +3,9 @@
 require_once "conexion.php";
 
 Class ModeloFormularios {
-
+/*=============================================
+=            Inserta los usuarios   (INSERT)       =
+=============================================*/
 static public function mdlRegistro($tabla, $datos){
 
 	$stmt = Conexion::conectar()->prepare("INSERT INTO $tabla(nombre,email,password) VALUES (:nombre, :email, :password)");
@@ -23,8 +25,20 @@ static public function mdlRegistro($tabla, $datos){
 	$stmt->close();
 	/*vaciamos la variable, ofrece mayor seguridad*/
 	$stmt = null;
-
-
 }
 
+/*=============================================
+=            Selecciona los registros (SELECT)       =
+=============================================*/
+static public function mdlSeleccionarRegistros($tabla){
+
+	$stmt = Conexion::conectar()->prepare("SELECT * FROM $tabla");
+	$stmt -> execute();
+		return $stmt -> fetchAll();
+	/*Cierra la conexion*/
+	$stmt->close();
+	/*vaciamos la variable, ofrece mayor seguridad*/
+	$stmt = null;
 }
+}
+

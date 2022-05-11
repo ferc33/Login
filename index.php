@@ -6,11 +6,10 @@ el usuario envie al controlador*/
 
 /**/
 require_once "modelo/conexion.php";
-require_once "controlador/plantilla.controlador.php";
-require_once "controlador/formulario.controlador.php";
-
 require_once "modelo/formulario.modelo.php";
 
+require_once "controlador/plantilla.controlador.php";
+require_once "controlador/formulario.controlador.php";
 
 $conexion = Conexion::conectar(); //metodo static
 $plantilla = new ControladorPlantilla();

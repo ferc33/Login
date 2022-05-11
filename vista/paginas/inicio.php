@@ -1,30 +1,30 @@
-<div>
-  
-<form class=container ></form>
-<table class="table table-striped">
-  <thead>
-    <tr>
-      <th>Firstname</th>
-      <th>Lastname</th>
-      <th>Email</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Ector</td>
-      <td>Perez</td>
-      <td>john@example.com</td>
-    </tr>
-    <tr>
-      <td>Fat</td>
-      <td>Moe</td>
-      <td>mary@example.com</td>
-    </tr>
-    <tr>
-      <td>Cabechon</td>
-      <td>Dooley</td>
-      <td>july@example.com</td>
-    </tr>
-  </tbody>
-</table>
-</div>
+  <?php 
+  $usuarios = ControladorFormularios::ctrSeleccionarRegistros();
+  ?>
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>Nombre</th><!--Columnas del formulario-->
+        <th>Email</th>
+        <th>Fecha</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      <?php foreach ($usuarios as $key => $value): ?>
+        <td><?php echo $value["nombre"]; ?> </td> <!--filas del formulario-->
+        <td><?php echo $value["email"]; ?></td>
+        <td><?php echo $value["fecha"]; ?> </td>
+
+        <td>
+        <div class = "button-group">
+        <button class = "btn btn-warning"><i class="fa-solid fa-pen-to-square"></i></button>
+        <button class = "btn btn-danger"><i class="fa-solid fa-trash"></i></button>
+        </div>
+
+        <td>
+
+        </tr>
+         <?php endforeach ?>
+        </tbody>
+  </table>
