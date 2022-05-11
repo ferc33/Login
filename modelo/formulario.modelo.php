@@ -30,15 +30,33 @@ static public function mdlRegistro($tabla, $datos){
 /*=============================================
 =            Selecciona los registros (SELECT)       =
 =============================================*/
-static public function mdlSeleccionarRegistros($tabla){
+static public function mdlSeleccionarRegistros($tabla,$item,$valor){
+	/* USANDO SENTENCIA DE DATE_FORMAT PARA QUE DEVUELVA FECHA DESEADA */
+	if($item == null && $valor==null){
 
-	$stmt = Conexion::conectar()->prepare("SELECT * FROM $tabla");
-	$stmt -> execute();
+		$stmt = Conexion::conectar()->prepare("SELECT *,DATE_FORMAT(fecha, '%d-%m-%Y') AS fecha FROM $tabla ORDER BY id ASC");
+		$stmt -> execute();
 		return $stmt -> fetchAll();
-	/*Cierra la conexion*/
+
+	}else {
+
+		$stmt = Conexion::conectar()->prepare("SELECT *,DATE_FORMAT(fecha, '%d-%m-%Y') AS fecha 
+			FROM $tabla WHERE $item = :$item ORDER BY id DESC");
+ 			//se utiliza bindparam para hacer consultas con parametros de manera segura.
+
+ 			$stmt->bindParam(":".$item, $valor, PDO::PARAM_STR);
+
+		$stmt -> execute();
+		return $stmt -> fetch();
+
+	}
 	$stmt->close();
 	/*vaciamos la variable, ofrece mayor seguridad*/
 	$stmt = null;
+
+	/*Cierra la conexion*/
+	
 }
+
 }
 
