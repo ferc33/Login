@@ -9,16 +9,33 @@ class ControladorFormularios{
 	static public function ctrRegistro(){
 
 		if(isset($_POST["registroNombre"])){
+			
+			if(preg_match('/^[a-zA-ZñÑáéíóúÁÉÍÓÚ ]+$/', $_POST["registroNombre"]) &&
+			   preg_match('/^[^0-9][a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*[@][a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*[.][a-zA-Z]{2,4}$/', $_POST["registroEmail"]) &&
+			   preg_match('/^[0-9a-zA-Z]+$/', $_POST["registroPassword"])){
 
-			$tabla = "registros";
+				$tabla = "registros";
 
-			$datos = array("nombre" => $_POST["registroNombre"],
-				           "email" => $_POST["registroEmail"],
-				           "password" => $_POST["registroPassword"]);
+				$token = md5($_POST["registroNombre"]."+".$_POST["registroEmail"]);
 
-			$respuesta = ModeloFormularios::mdlRegistro($tabla, $datos);
+				$encriptarPassword = crypt($_POST["registroPassword"], '$2a$07$asxx54ahjppf45sd87a5a4dDDGsystemdev$');
 
-			return $respuesta;
+				$datos = array("token" => $token,
+								"nombre" => $_POST["registroNombre"],
+					           "email" => $_POST["registroEmail"],
+					           "password" => $encriptarPassword);
+
+				$respuesta = ModeloFormularios::mdlRegistro($tabla, $datos);
+
+				return $respuesta;
+
+			}else{
+
+				$respuesta = "error";
+
+				return $respuesta;
+
+			}
 
 		}
 
@@ -52,7 +69,11 @@ class ControladorFormularios{
 
 			$respuesta = ModeloFormularios::mdlSeleccionarRegistros($tabla, $item, $valor);
 
-			if($respuesta["email"] == $_POST["ingresoEmail"] && $respuesta["password"] == $_POST["ingresoPassword"]){
+			$encriptarPassword = crypt($_POST["ingresoPassword"], '$2a$07$asxx54ahjppf45sd87a5a4dDDGsystemdev$');
+
+			if($respuesta["email"] == $_POST["ingresoEmail"] && $respuesta["password"] == $encriptarPassword){
+
+				ModeloFormularios::mdlActualizarIntentosFallidos($tabla, 0, $respuesta["token"]);
 
 				$_SESSION["validarIngreso"] = "ok";
 
@@ -64,13 +85,26 @@ class ControladorFormularios{
 
 					}
 
-					window.location = "index.php?pagina=inicio";
+					window.location = "inicio";
 
 				</script>';
 
 			}else{
 
+				if($respuesta["intentos_fallidos"] < 3){
 
+					$tabla = "registros";
+
+					$intentos_fallidos = $respuesta["intentos_fallidos"]+1;
+					
+					ModeloFormularios::mdlActualizarIntentosFallidos($tabla, $intentos_fallidos, $respuesta["token"]);
+
+				}else{
+
+					echo '<div class="alert alert-warning">RECAPTCHA Debes validar que no eres un robot</div>';
+
+				}
+			
 				echo '<script>
 
 					if ( window.history.replaceState ) {
@@ -97,25 +131,57 @@ class ControladorFormularios{
 
 		if(isset($_POST["actualizarNombre"])){
 
-			if($_POST["actualizarPassword"] != ""){			
 
-				$password = $_POST["actualizarPassword"];
+			if(preg_match('/^[a-zA-ZñÑáéíóúÁÉÍÓÚ ]+$/', $_POST["actualizarNombre"]) &&
+			   preg_match('/^[^0-9][a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*[@][a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*[.][a-zA-Z]{2,4}$/', $_POST["actualizarEmail"])){
+
+				$usuario = ModeloFormularios::mdlSeleccionarRegistros("registros", "token", $_POST["tokenUsuario"]);
+
+				if($compararToken == $_POST["tokenUsuario"] && $_POST["idUsuario"] == $usuario["id"]){
+					
+					if($_POST["actualizarPassword"] != ""){
+
+						if(preg_match('/^[0-9a-zA-Z]+$/', $_POST["actualizarPassword"])){
+
+							$password = crypt($_POST["actualizarPassword"], '$2a$07$asxx54ahjppf45sd87a5a4dDDGsystemdev$');
+
+						}
+
+					}else{
+
+						$password = $_POST["passwordActual"];
+					}
+
+					$tabla = "registros";
+
+					$actualizarToken = md5($_POST["actualizarNombre"]."+".$_POST["actualizarEmail"]);
+
+					$datos = array( "id" => $_POST["idUsuario"],
+									"token" => $actualizarToken,
+									"nombre" => $_POST["actualizarNombre"],
+						           "email" => $_POST["actualizarEmail"],
+						           "password" => $password);
+
+					$respuesta = ModeloFormularios::mdlActualizarRegistro($tabla, $datos);
+
+					return $respuesta;
+
+				}else{
+
+					$respuesta = "error";
+
+					return $respuesta;
+
+				}
 
 			}else{
 
-				$password = $_POST["passwordActual"];
+				$respuesta = "error";
+
+				return $respuesta;
+
 			}
-
-			$tabla = "registros";
-
-			$datos = array("id" => $_POST["idUsuario"],
-							"nombre" => $_POST["actualizarNombre"],
-				           "email" => $_POST["actualizarEmail"],
-				           "password" => $password);
-
-			$respuesta = ModeloFormularios::mdlActualizarRegistro($tabla, $datos);
-
-			return $respuesta;
+	
 
 		}
 
@@ -129,26 +195,35 @@ class ControladorFormularios{
 
 		if(isset($_POST["eliminarRegistro"])){
 
-			$tabla = "registros";
-			$valor = $_POST["eliminarRegistro"];
+			$usuario = ModeloFormularios::mdlSeleccionarRegistros("registros", "token",  $_POST["eliminarRegistro"]);
 
-			$respuesta = ModeloFormularios::mdlEliminarRegistro($tabla, $valor);
+			$compararToken = md5($usuario["nombre"]."+".$usuario["email"]);
 
-			if($respuesta == "ok"){
+			if($compararToken == $_POST["eliminarRegistro"]){
 
-				echo '<script>
+				$tabla = "registros";
+				$valor = $_POST["eliminarRegistro"];
 
-					if ( window.history.replaceState ) {
+				$respuesta = ModeloFormularios::mdlEliminarRegistro($tabla, $valor);
 
-						window.history.replaceState( null, null, window.location.href );
+				if($respuesta == "ok"){
 
-					}
+					echo '<script>
 
-					window.location = "index.php?pagina=inicio";
+						if ( window.history.replaceState ) {
 
-				</script>';
+							window.history.replaceState( null, null, window.location.href );
+
+						}
+
+						window.location = "inicio";
+
+					</script>';
+
+				}
 
 			}
+		
 
 		}
 
