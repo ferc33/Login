@@ -1,3 +1,3 @@
 Login.
 
-![Login][(https://github.com/ferc33/Login/blob/main/galeria/registro.png)
+![Login](https://github.com/ferc33/Login/blob/main/galeria/registro.png)
